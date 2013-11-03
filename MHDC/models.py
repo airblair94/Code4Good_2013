@@ -1,0 +1,429 @@
+from django.forms import *
+from django.core import validators
+
+from django.contrib.auth.models import User, Group
+from django.contrib.auth.forms import UserCreationForm
+
+from django.db import models
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, unique=True)
+    middle_initial = models.CharField("Middle Initial", max_length=1)
+    DOB = models.DateField("Date of Birth")
+    veteran = models.BooleanField("Veteran?")
+    disability = models.BooleanField("Disability?", default=False)
+    raceTypes = (("w", "white"), ("b", "black"), ("h", "hispanic"), ("o","other"))
+    race = models.CharField("Race/Ethnicity (optional)", max_length=1, choices=raceTypes)
+    SSN = models.CharField("SSN", max_length=9)
+    Ph_day = models.CharField("Day Phone", max_length=10)
+    Ph_evening = models.CharField("Evening Phone", max_length=10)
+    Ph_cell = models.CharField("Cell Phone", max_length=10, blank=True, null=True)
+
+    Mailing_address = models.CharField("Mailing Address", max_length=50)
+    Mailing_city = models.CharField("Mailing City", max_length=50)
+    Mailing_county = models.CharField("Mailing County", max_length=50)
+    Mailing_State = models.CharField("Mailing State", max_length=50)
+    Mailing_Zip = models.CharField("Mailing Zipcode", max_length=5)
+
+    Physical_address = models.CharField("Physical Address", max_length=50)
+    Physical_city = models.CharField("Physical City", max_length=50)
+    Physical_county = models.CharField("Physical County", max_length=50)
+    Physical_State = models.CharField("Physical State", max_length=50)
+    Physical_Zip = models.CharField("Physical Zipcode", max_length=5)
+    Years_There = models.CharField("Years There", max_length=2)
+
+    #Information associated with guest
+    has_guest = models.BooleanField("Register a guest user?")
+    guest_first_name = models.CharField("Guest First Name", max_length=50, blank=True, null=True)
+    guest_last_name = models.CharField("Guest Last Name", max_length=50, blank=True, null=True)
+    guest_relationship = models.CharField("Relationship to Guest", max_length=50, blank=True, null=True)
+    guest_email = models.CharField("Guest Email Address", max_length=50, blank=True, null=True)
+
+
+class SelfHelpApplication(models.Model):
+    userProfile = models.ForeignKey(UserProfile)
+    status = models.CharField("Status", max_length=15)
+    dateReceived = models.CharField("Received", max_length=11)
+
+    #Remainder of information for Applicant
+    appPrevAddress = models.CharField("Previous Address", max_length=100)
+    appPrevCity = models.CharField("Previous City", max_length=20)
+    appPrevZip = models.CharField("Previous Zip Code", max_length=5)
+    appEmployerName = models.CharField("Employer Name", max_length=50)
+    appEmployerAddress = models.CharField("Employer Address", max_length=100)
+    appEmployerprevCity = models.CharField("Employer Previous City", max_length=20)
+    appEmployerprevZip = models.CharField("Employer previous Zip", max_length=5)
+    appYearsThere = models.CharField("Years in house", max_length=2)
+
+    #Remainder of information for Co-applicant
+    co_first_name = models.CharField("Co-applicant's First Name", max_length=50)
+    co_last_name = models.CharField("Co-applicant's Last Name", max_length=50)
+    co_middle_initial = models.CharField("Co-applicant's Middle Initial", max_length=1)
+    co_DOB = models.DateField("Co-applicant's DOB")
+    co_SSN = models.CharField("Co-applicant's SSN", max_length=9)
+    co_Ph_day = models.CharField("Co-applicant's Day Phone", max_length=10)
+    co_Ph_evening = models.CharField("Co-applicant's Evening Phone", max_length=10)
+    co_Ph_cell = models.CharField("Co-applicant's Home Cell", max_length=10)
+
+    co_Mailing_address = models.CharField("Co-applicant's Mailing Address", max_length=50)
+    co_Mailing_city = models.CharField("Co-applicant's Mailing City", max_length=50)
+    co_Mailing_county = models.CharField("Co-applicant's Mailing County", max_length=50)
+    co_Mailing_State = models.CharField("Co-applicant's Mailing State", max_length=50)
+    co_Mailing_Zip = models.CharField("Co-applicant's Mailing Zipcode", max_length=5)
+    co_Years_There = models.CharField("Co-applicant's Years There", max_length=2)
+
+    co_appPrevAddress = models.CharField("Co-applicant's Previous Address", max_length=100)
+    co_appPrevCity = models.CharField("Co-applicant's Previous City", max_length=20)
+    co_appPrevZip = models.CharField("Co-applicant's Previous City", max_length=5)
+    co_appEmployerName = models.CharField("Co-applicant's Employer Name", max_length=50)
+    co_appEmployerAddress = models.CharField("Co-applicant's Employer Address", max_length=100)
+    co_appEmployerprevCity = models.CharField("Co-applicant's Employer previous city", max_length=20)
+    co_appEmployerprevZip = models.CharField("Co-applicant's Employer previous Zip", max_length=5)
+    co_appYearsThere = models.CharField("Co-applicant's Years There", max_length=2)
+
+    totalHousehold = models.CharField("Total members in household", max_length=2)
+    #Answer to the question is the house over crowded?
+    crowdedHouse = models.BooleanField("Is the house overcrowded?", )
+    numBedrooms = models.CharField("Number of Bedrooms?", max_length=1)
+    #Answer to the question is anyone in house disabled?
+    disabilities = models.BooleanField("Is anyone in the house disabled", )
+    #Answer to the question do you own a home?
+    homeOwner = models.BooleanField("Are you the home owner", )
+    #Answer to the question is your name on deed?
+    deed = models.BooleanField("Is your name on the deed", )
+    #List of possible areas plus the users area
+    area = (("K", "Kent County"), ("S", "Sussex County"))
+    currentArea = models.CharField("What is your current area", max_length=1, choices=area)
+    referral = models.CharField(max_length=100)
+
+class DocCheckList(models.Model):
+    #required
+    userProfile = models.ForeignKey(UserProfile)
+    bankStatements = models.BooleanField(default=False)
+    payStubs = models.BooleanField(default=False)
+    taxForms = models.BooleanField(default=False)
+    childSupport = models.BooleanField(default=False)
+    moneyOrder = models.BooleanField(default=False)
+    picID = models.BooleanField(default=False)
+    landlordContact = models.BooleanField(default=False)
+
+    #if applicable
+    socialSecurity = models.BooleanField(default=False)
+    foodAssistance = models.BooleanField(default=False)
+    TANF = models.BooleanField(default=False)
+    divorce = models.BooleanField(default=False)
+    bankruptcy = models.BooleanField(default=False)
+    alimony = models.BooleanField(default=False)
+
+class SelfHelpStaffChecklist(models.Model):
+    userProfile = models.ForeignKey(UserProfile)
+    area = (("K", "Kent County"), ("S", "Sussex County"))
+    currentArea = models.CharField(max_length=1, choices=area)
+    ami = models.BooleanField()
+
+    #Step 1: Orientation
+    orientation_dateComplete = models.CharField(max_length=11) 
+    orientation_signature = models.BooleanField()
+
+    #Step 2: Credit Review and Counseling
+    creditPlan_dateComplete = models.CharField(max_length=11) 
+    creditPlan_signature = models.BooleanField()
+    docCheckList_dateComplete = models.CharField(max_length=11) 
+    docCheckList_signature = models.BooleanField()
+    counselSession_dateComplete = models.CharField(max_length=11) 
+    counselSession_signature = models.BooleanField()
+    totalCreditReview_dateComplete = models.CharField(max_length=11) 
+    totalCreditReview_signature = models.BooleanField()
+
+    #Step 3: If Credit Ready
+    updatePaystubs_dateComplete = models.CharField(max_length=11) 
+    updatePaystubs_signature = models.BooleanField()
+    assets_dateComplete = models.CharField(max_length=11) 
+    assets_signature = models.BooleanField()
+    recentPaystubs_dateComplete = models.CharField(max_length=11) 
+    recentPaystubs_signature = models.BooleanField()
+    recentTaxes_dateComplete = models.CharField(max_length=11) 
+    recentTaxes_signature = models.BooleanField()
+    childSupportOrder_dateComplete = models.CharField(max_length=11) 
+    childSupportOrder_signature = models.BooleanField()
+    childSupportHistory_dateComplete = models.CharField(max_length=11) 
+    childSupportHistory_signature = models.BooleanField()
+    picIDs_dateComplete = models.CharField(max_length=11) 
+    picIDs_signature = models.BooleanField()
+    socialSecurityLetter_dateComplete = models.CharField(max_length=11) 
+    socialSecurityLetter_signature = models.BooleanField()
+    monthlyPension_dateComplete = models.CharField(max_length=11) 
+    monthlyPension_signature = models.BooleanField()
+    purchaseOfCare_dateComplete = models.CharField(max_length=11) 
+    purchaseOfCare_signature = models.BooleanField()
+    foodAssistance_dateComplete = models.CharField(max_length=11) 
+    foodAssistance_signature = models.BooleanField()
+    tanfLetter_dateComplete = models.CharField(max_length=11) 
+    tanfLetter_signature = models.BooleanField()
+    divorce_dateComplete = models.CharField(max_length=11) 
+    divorce_signature = models.BooleanField()
+    bankruptcy_dateComplete = models.CharField(max_length=11) 
+    bankruptcy_signature = models.BooleanField()
+    alimony_dateComplete = models.CharField(max_length=11) 
+    alimony_signature = models.BooleanField()
+    mortgage_dateComplete = models.CharField(max_length=11) 
+    mortgage_signature = models.BooleanField()
+    release_dateComplete = models.CharField(max_length=11) 
+    release_signature = models.BooleanField()
+    
+    #Step 4: Initial Income Eligibility Determined
+    ifIneligible_dateComplete = models.CharField(max_length=11) 
+    ifIneligible_signature = models.BooleanField()
+    ifEligible_dateComplete = models.CharField(max_length=11) 
+    ifEligible_signature = models.BooleanField()
+    eligibility_dateComplete = models.CharField(max_length=11) 
+    eligibility_signature = models.BooleanField()
+    
+    #Step 5: Complete Loan application and submit to USDA: 
+    totalApplication_dateComplete = models.CharField(max_length=11) 
+    totalApplication_signature = models.BooleanField()
+    
+    #Step 6: Request Cost Estimate
+    requestEstimate_dateComplete = models.CharField(max_length=11) 
+    requestEstimate_signature = models.BooleanField()
+    constructionDocumentation_dateComplete = models.CharField(max_length=11) 
+    constructionDocumentation_signature = models.BooleanField()
+    
+    #Step 7: Submit Property information to USDA for Appraisal Request
+    usdaAppraisalRequest_dateComplete = models.CharField(max_length=11) 
+    usdaAppraisalRequest_signature = models.BooleanField()
+    
+    #Step 8: USDA Appraisal
+    usdaInterview_dateComplete = models.CharField(max_length=11) 
+    usdaInterview_signature = models.BooleanField()
+    
+    #Step 9: Schedule Loan for Closing with USDA, Client, and Clients Attorney
+    scheduleClosing_dateComplete = models.CharField(max_length=11) 
+    scheduleClosing_signature = models.BooleanField()
+    
+    #Step 10: Request Survey
+    requestSurvey_dateComplete = models.CharField(max_length=11) 
+    requestSurvey_signature = models.BooleanField()
+    
+    #Step 11: Closing
+    requestTitle_dateComplete = models.CharField(max_length=11) 
+    requestTitle_signature = models.BooleanField()
+    forwardSurvey_dateComplete = models.CharField(max_length=11) 
+    forwardSurvey_signature = models.BooleanField()
+    reviewHUD_dateComplete = models.CharField(max_length=11) 
+    reviewHUD_signature = models.BooleanField()
+    
+
+
+class HomeRepair(models.Model):
+        userProfile = models.ForeignKey(UserProfile)
+        status = models.CharField("Status", max_length=15)
+        dateReceived = models.CharField(max_length=11)
+        Home_owners_insurance = models.BooleanField()
+        Own_multiple_props = models.BooleanField()
+        Property_taxes_uptodate_city = models.CharField(max_length=10)
+        Property_taxes_uptodate_county = models.CharField(max_length=10)
+        Mortage = models.CharField(max_length=1)
+        Reverse_mortage = models.CharField(max_length=1)
+        DWELLING = (
+                ('R', 'Ranch'),
+                ('T', '2 Story'),
+                ('M', 'Modular'),
+                ('MH', 'Mobile Home'),
+                ('D', 'Double Wide')
+        )
+        Dwelling_type = models.CharField(max_length=1, choices=DWELLING)
+        Own_dwelling = models.BooleanField()
+        Develpment = models.CharField(max_length=50)
+        Previous_client = models.BooleanField()
+        Previous_when = models.CharField(max_length=30)
+        Work_completed_by_HRP = models.CharField(max_length=30)
+        Referred_to_HRP_by = models.CharField(max_length=30)
+        APPLIED = (
+                ('C', 'CDBG'),
+                ('U', 'USDA-Rural Development')
+        )
+        Applied_to = models.CharField(max_length=1, choices=APPLIED)
+        Emergengy_Repair = models.CharField(max_length=100)
+        Furnace_Issues = models.BooleanField()
+        Eletric_Issues = models.BooleanField()
+        Plumbing_Issues = models.BooleanField()
+        Carbon_monoxide_detectors_needed = models.BooleanField()
+        Smoke_detectors_needed = models.BooleanField()
+        APPS = (
+                ('G', 'gas'),
+                ('E', 'electric')
+        )
+        appliances = models.CharField(max_length=1, choices=APPS)
+        #class living in home appears hear in the paper form
+        Estimated_annual_income = models.CharField(max_length=10)
+        #The part below is filled out internally
+        Max_income_for_people = models.CharField(max_length=2)
+        Max_income_per_person = models.CharField(max_length=10)
+        Mo_income_SS = models.CharField("Monthly Income - SS", max_length=20)
+        Mo_income_SSDI = models.CharField("Monthly Income - SSDI", max_length=20)
+        Mo_income_Food_Assist = models.CharField("Monthly Income - Food Assist" ,max_length=20)
+        Mo_income_TANF = models.CharField("Monthly Income - TANF", max_length=20)
+        Package_mailed = models.CharField(max_length=20)
+        Package_returned = models.CharField(max_length=20)
+        Verified_Home_ownership = models.CharField(max_length=10)
+        Total_Monthly = models.CharField(max_length=10)
+        HRP_Approved = models.CharField(max_length=10)
+        HRP_Denied = models.CharField(max_length=10)
+        Denial_or_approval_explanation=models.CharField(max_length=1000)
+        Contact_notes = models.CharField(max_length=4000)
+
+
+class LivingInHome(models.Model):
+        relationship = models.CharField(max_length=30)
+        DOB = models.CharField(max_length=20)
+        Disabled = models.BooleanField()
+
+class Month1(models.Model):
+        Income_from_Employment = models.CharField(max_length=20)
+        Unemployment = models.CharField(max_length=20)
+        TANF_Food_Stamps= models.CharField(max_length=20)
+        Alimony_Child_support = models.CharField(max_length=20)
+        SSI_Disability = models.CharField(max_length=20)
+        Savings_account = models.CharField(max_length=20)
+        Rental_income = models.CharField(max_length=20)
+        Pension_income = models.CharField(max_length=20)
+        Total = models.CharField(max_length=20)
+
+class Month2(models.Model):
+        Income_from_Employment = models.CharField(max_length=20)
+        Unemployment = models.CharField(max_length=20)
+        TANF_Food_Stamps= models.CharField(max_length=20)
+        Alimony_Child_support = models.CharField(max_length=20)
+        SSI_Disability = models.CharField(max_length=20)
+        Savings_account = models.CharField(max_length=20)
+        Rental_income = models.CharField(max_length=20)
+        Pension_income = models.CharField(max_length=20)
+        Total = models.CharField(max_length=20)
+
+class Month3(models.Model):
+        Income_from_Employment = models.CharField(max_length=20)
+        Unemployment = models.CharField(max_length=20)
+        TANF_Food_Stamps= models.CharField(max_length=20)
+        Alimony_Child_support = models.CharField(max_length=20)
+        SSI_Disability = models.CharField(max_length=20)
+        Savings_account = models.CharField(max_length=20)
+        Rental_income = models.CharField(max_length=20)
+        Pension_income = models.CharField(max_length=20)
+        Total = models.CharField(max_length=20)
+
+class Month4(models.Model):
+        Income_from_Employment = models.CharField(max_length=20)
+        Unemployment = models.CharField(max_length=20)
+        TANF_Food_Stamps= models.CharField(max_length=20)
+        Alimony_Child_support = models.CharField(max_length=20)
+        SSI_Disability = models.CharField(max_length=20)
+        Savings_account = models.CharField(max_length=20)
+        Rental_income = models.CharField(max_length=20)
+        Pension_income = models.CharField(max_length=20)
+        Total = models.CharField(max_length=20)
+
+class Month5(models.Model):
+        Income_from_Employment = models.CharField(max_length=20)
+        Unemployment = models.CharField(max_length=20)
+        TANF_Food_Stamps= models.CharField(max_length=20)
+        Alimony_Child_support = models.CharField(max_length=20)
+        SSI_Disability = models.CharField(max_length=20)
+        Savings_account = models.CharField(max_length=20)
+        Rental_income = models.CharField(max_length=20)
+        Pension_income = models.CharField(max_length=20)
+        Total = models.CharField(max_length=20)
+
+class RepairChecklist(models.Model):
+        userProfile = models.ForeignKey(UserProfile)
+        Deed = models.BooleanField()
+        Title_mobile_home = models.BooleanField()
+        Most_recent_paystubs = models.BooleanField()
+        Verification_of_unemployment_income = models.BooleanField()
+        Federal_tax_returns = models.BooleanField()
+        Child_support_court_order_12_month_history = models.BooleanField()
+        Drivers_license_identificaton = models.BooleanField()
+        Rental_income = models.BooleanField()
+        Current_Social_Security_Disability_Award_leter = models.BooleanField()
+        Purchase_of_care_letter = models.BooleanField()
+        Food_assistance_Letter = models.BooleanField()
+        TANF_letter= models.BooleanField()
+        Divorce_Decree = models.BooleanField()
+        Bankruptcy_Documentation = models.BooleanField()
+        Alimony = models.BooleanField()
+        Letter_of_Medical_Necessity_for_Ramps = models.BooleanField()
+        Copy_of_cleaning_for_furnace = models.BooleanField()
+        County_CDBG_referral_form = models.BooleanField()
+
+class RepairInternalChecklist(models.Model):
+    userProfile = models.ForeignKey(UserProfile)
+    Intake_form = models.CharField(max_length=15)
+    Eligibility_Packet_Sent = models.CharField(max_length=15)
+    Total_Eligibility_Packet_received = models.CharField(max_length=15)
+    Deed = models.CharField(max_length=15)
+    Deed_upload = models.BooleanField()
+    Copy_of_Property_Taxes = models.CharField(max_length=15)
+    Copy_of_Property_Taxes_upload = models.BooleanField()
+    Two_months_bank_Statements = models.CharField(max_length=15)
+    Two_months_bank_Statements_upload = models.BooleanField()
+    Six_recent_Pay_stubs = models.CharField(max_length=15)
+    Six_recent_Pay_stubs_upload = models.BooleanField()
+    Federal_Taxes_two_years = models.CharField(max_length=15)
+    Federal_Taxes_two_years_upload = models.BooleanField()
+    Child_Support_Court_Order = models.CharField(max_length=15)
+    Child_Support_Court_Order_upload = models.BooleanField()
+    Child_Support_History = models.CharField(max_length=15)
+    Child_Support_History_upload = models.BooleanField()
+    Copy_of_Drivers_license = models.CharField(max_length=15)
+    Copy_of_Drivers_license_upload = models.BooleanField()
+    #The following only if available
+    Disability_Award_letter = models.CharField(max_length=15)
+    Disability_Award_letter_upload = models.BooleanField()
+    Monthly_Pension_Statements = models.CharField(max_length=15)
+    Monthly_Pension_Statements_upload = models.BooleanField()
+    Purchase_Care_Letter = models.CharField(max_length=15)
+    Purchase_Care_Letter_upload = models.BooleanField()
+    Food_Assistance_Letter = models.CharField(max_length=15)
+    Food_Assistance_Letter_upload = models.BooleanField()
+    TANF_letter = models.CharField(max_length=15)
+    TANF_letter_upload = models.BooleanField()
+    Divorce_Decree = models.CharField(max_length=15)
+    Divorce_Decree_upload = models.BooleanField()
+    Bankruptcy_Discharge_Documentation = models.CharField(max_length=15)
+    Bankruptcy_Discharge_Documentation_upload = models.BooleanField()
+    Alimony = models.CharField(max_length=15)
+    Alimony_upload = models.BooleanField()
+    Mortage_Statement = models.CharField(max_length=15)
+    Mortage_Statement_upload = models.BooleanField()
+    Authorization_Release_Info = models.CharField(max_length=15)
+    Authorization_Release_Info_upload = models.BooleanField()
+    Income_Elibility_Determined = models.CharField(max_length=15)
+    #Possible outcomes for above Eligibility
+    Denial_letter_sent = models.CharField(max_length=15)
+    Denial_letter_sent_upload = models.BooleanField()
+    Client_file_passed = models.CharField(max_length=15)
+    Preservation_Manager_calls = models.CharField(max_length=15)
+    Preservation_Manager_calls_upload = models.BooleanField()
+    #Site Visit
+    Site_visit_worksheet = models.CharField(max_length=15)
+    Site_visit_worksheet_upload = models.BooleanField()
+    Photos_of_dwelling = models.CharField(max_length=15)
+    Photos_of_dwelling_upload = models.BooleanField()
+    #Scope of Work Prepared
+    Prepare_presentation_committee = models.CharField(max_length=15)
+    Approved_or_Denied = models.CharField(max_length=15)
+    # 7 Fran prepare work approved and places on Work In Progress
+    Spreadsheet_on_server = models.CharField(max_length=15)
+    # 8 Letter sent to client
+    Letter_sent = models.CharField(max_length=15)
+    Letter_sent_upload = models.BooleanField()
+    # 9 Appointment Scheduled by Construction Supervisor to meet with client
+    Appoinment_with_client = models.CharField(max_length=15)
+    Appoinment_with_client_upload = models.BooleanField()
+    # 10 Construction information
+    Invoices_given_to_PCP = models.CharField(max_length=15)
+    Invoices_given_to_PCP_upload = models.BooleanField()
+    Submit_invoices_to_AD = models.CharField(max_length=15)
+    Submit_invoices_to_AD_upload = models.BooleanField()
+    Finalize_payment_requests = models.CharField(max_length=15)
+    Finalize_payment_requests_upload = models.BooleanField()

@@ -1,0 +1,9 @@
+#left-bar {
+    width: 30%;
+    float: left;
+}
+
+#main-content {
+    width: 70%;
+    float: right;
+}

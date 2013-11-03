@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset = "UTF-8">
+<link rel="stylesheet" type="text/css" media="all" href="{{STATIC_URL}}css/cfg.css">
+<link rel="stylesheet" type="text/css" media="all" href="{{STATIC_URL}}css/custom.css">
+</head>
+<body>
+{% include "header.html" %}
+<div id="page">
+  <div class="entry-content">
+    <div id="left-bar">
+      <div>{% include "login_form.html" %}</div>
+    </div>
+    <div id="main-content">
+      <form class="appForm" method="post" action="/register_user/">
+	{% csrf_token %}
+	{{ user_form.as_p }}
+	{{ profile_form.as_p }}
+	<input type="submit" value="Submit" />
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>

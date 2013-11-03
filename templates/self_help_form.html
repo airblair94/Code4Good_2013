@@ -1,0 +1,6 @@
+<h1>Self Help Form</h1>
+<form class="appForm" method="post" action="/self_help_app/">
+{% csrf_token %}
+{{ form.as_p }}
+<input type="submit" value="Submit" />
+</form>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset = "UTF-8">
+<meta name="viewport" content="width=device-width">
+<link rel="stylesheet" type="text/css" media="all" href="{{STATIC_URL}}css/cfg.css">
+<link rel="stylesheet" type="text/css" media="all" href="{{STATIC_URL}}css/custom.css">
+</head>
+<body>
+{% include "header.html" %}
+<div id="page">
+  <div class="entry-content">
+    <div id="left-bar">
+      <div>{% include "user_sidebar.html" %}</div>
+    </div>
+    <div id="main-content">
+      {% autoescape off %}
+      {{ content }}
+      {% endautoescape %}
+    </div>
+  </div>
+</div>
+</body>
+</html>
+

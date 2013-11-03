@@ -1,0 +1,55 @@
+a {
+	color:teal;
+}
+a:hover {
+	color:green;
+}
+
+.errorMessage {
+	color:maroon;
+}
+
+.errorlist {
+	list-style-type:none;
+	margin-bottom:0px;
+	padding-bottom:0px;
+	border-radius:10px;
+	border-bottom-left-radius:0px;
+	border-bottom-right-radius:0px;
+	background-color:#FCBBD3;
+	display: inline-block;
+	color:#8C0000;
+	font-style:oblique;
+}
+
+#left-bar {
+	display: inline-block;
+	width: 200px;    
+}
+
+#left-bar li {
+	list-style:none;
+	padding: 5px;
+}
+
+#left-bar li a {
+	text-decoration:none;
+	color:black;
+}
+
+#main-content {
+	margin-left:20px;
+	display:inline-block;
+	width:60%;
+	vertical-align:top;
+	color:black; 
+}
+
+#main-content a {
+    font-weight:20;
+    text-align: center;
+}
+
+.entry-content {
+	min-width: 600px;
+}

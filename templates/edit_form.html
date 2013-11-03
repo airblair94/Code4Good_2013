@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset = "UTF-8">
+<meta name="viewport" content="width=device-width">
+<link rel="stylesheet" type="text/css" media="all" href="{{STATIC_URL}}css/cfg.css">
+<link rel="stylesheet" type="text/css" media="all" href="{{STATIC_URL}}css/custom.css">
+</head>
+<body>
+{% include "header.html" %}
+<div id="page">
+  <div class="entry-content">
+    <div id="left-bar">
+      <div>{% include sidebar %}</div>
+    </div>
+    <div id="main-content">
+      <form class="appForm" action="{{ action }}" method="POST">
+      {% csrf_token %}
+      {% autoescape off %}
+      {{ form.as_p }}
+      {% endautoescape %}
+      <input type="submit" value="Submit" />
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+

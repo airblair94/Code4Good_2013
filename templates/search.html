@@ -1,0 +1,28 @@
+<DOCTYPE html>
+<html>
+<head>
+<meta charset = "UTF-8">
+<meta name="viewport" content="width=device-width">
+</head>
+<body>
+{% include "header.html" %}
+<div id="page">
+  <div class="entry-content">
+    <div id="left-bar">
+     <div>{% include sidebar_var %}</div>
+    </div>
+    <div id="main-content">
+	<ol>
+	{% for i in content %}
+        <li>{{ i.first_name }} {{ i.last_name }} <ul>
+		<li><a href="/self_help_app/{{ i.id }}"> Self Help Application</a></li>
+		<li><a href="/home_repair_app/{{ i.id }}"> Home Repair Application</a></li></ul>
+	</li>
+	{% endfor %}
+	</ol>
+  </div>
+</div>
+</body>
+</html>
+
+

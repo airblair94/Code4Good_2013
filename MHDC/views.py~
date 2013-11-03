@@ -1,0 +1,61 @@
+from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.shortcuts import render
+from django.contrib import auth
+from models import *
+
+#Finished -------
+def self_help_application(request):
+	u = request.user
+	if u.is_authenticated():
+		if request.method == "POST":
+			form = SelfHelpForm(data=request.POST)
+			if form.is_valid():
+				form.save()
+		else:
+			form = SelfHelpForm()
+	else:
+		return HttpResponse("Please log in to submit an application.")
+	return render(request, "self_help_form.html", {"form":form})
+
+def home_repair_application(request):
+	u = request.user
+	if u.is_authenticated():
+		if request.method == "POST":
+			form = HomeRepair(data=request.POST)
+			if form.is_valid():
+				form.save()
+		else:
+			form = HomeRepair()
+	else:
+		return HttpResponse("Please log in to submit an application.")
+	return render(request, "home_repair_form.html", {"form":form})
+
+def new_member_application(request):
+	if request.method == "POST":
+        	form = UserProfileForm(data=request.POST)
+                if form.is_valid():
+                	form.save()
+         else:
+                form = UserProfileForm()
+        return render(request, "new_member.html", {"form":form})
+
+#IN PROGRESS: ---------------------
+def get_document_checklist(request):
+    u = request.user
+    checklist = DocCheckList.objects.filter(user=u)
+    return render(request, "index.html", {"":checklist})
+
+def get_self_help_staff_checklist(request):
+    u = request.user
+    checklist = SelfHelpStaffChecklist.objects.filter(user=u)
+    return render(request, "index.html", {"":checklist})
+
+def get_repair_checklist(request):
+    u = request.user
+    checklist = Repair_Checklist.objects.filter(user=u)
+    return render(request, "index.html", {"":checklist})
+
+def get_repair_internal_checklist(request):
+    u = request.user
+    checklist = Repair_Internal_Checklist.objects.filter(user=u)
+    return render(request, "index.html", {"":checklist})

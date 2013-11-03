@@ -1,0 +1,15 @@
+{% if form_errors %}
+<div class="errorMessage">Incorrect Email/Password.</div>
+{% endif %}
+
+<div>
+<form class="loginForm" action="user_login" method="POST">
+{% csrf_token %}
+Email Address:<br>
+<input type="text", name="email_address"><br>
+Password:<br>
+<input type="password", name="password">
+<button type="submit">Log in</button>
+ </form>
+<p><a class="formLink" href="/register_user/" text-decoration="none">New User</a></p>
+</div>
